@@ -1,0 +1,369 @@
+{
+	"restaurant": {
+		"id": "trattoria-del-gusto",
+		"name": "Trattoria del Gusto",
+		"description": "Experience the true taste of Italy with our handcrafted dishes made from traditional family recipes.",
+		"image": "https://images.unsplash.com/photo-1559339352-11d035aa65de?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+		"address": "456 Olive Garden Way, Little Italy",
+		"categories": [
+			{
+				"id": "pizza",
+				"name": "Pizza"
+			},
+			{
+				"id": "pasta",
+				"name": "Pasta"
+			},
+			{
+				"id": "dessert",
+				"name": "Dessert"
+			},
+			{
+				"id": "drinks",
+				"name": "Drinks"
+			}
+		]
+	},
+	"products": [
+		{
+			"id": "pizza-margherita",
+			"name": "Margherita",
+			"price": 12.0,
+			"category": "pizza",
+			"image": "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+			"description": "Classic tomato and mozzarella pizza with fresh basil.",
+			"ingredients": ["Tomato sauce", "Mozzarella", "Basil", "Olive Oil"]
+		},
+		{
+			"id": "pizza-pepperoni",
+			"name": "Pepperoni",
+			"price": 14.0,
+			"category": "pizza",
+			"image": "https://images.unsplash.com/photo-1628840042765-356cda07504e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+			"description": "A favorite classic with spicy pepperoni slices.",
+			"ingredients": ["Tomato sauce", "Mozzarella", "Pepperoni"]
+		},
+		{
+			"id": "pizza-quattro-formaggi",
+			"name": "Quattro Formaggi",
+			"price": 15.0,
+			"category": "pizza",
+			"image": "https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+			"description": "A rich blend of four delicious cheeses.",
+			"ingredients": ["Mozzarella", "Gorgonzola", "Parmesan", "Fontina"]
+		},
+		{
+			"id": "pizza-capricciosa",
+			"name": "Capricciosa",
+			"price": 16.0,
+			"category": "pizza",
+			"image": "https://images.unsplash.com/photo-1595854341625-f33ee10dbf94?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+			"description": "Loaded with ham, mushrooms, artichokes, and olives.",
+			"ingredients": [
+				"Tomato sauce",
+				"Mozzarella",
+				"Ham",
+				"Mushrooms",
+				"Artichokes",
+				"Olives"
+			]
+		},
+		{
+			"id": "pizza-prosciutto-e-funghi",
+			"name": "Prosciutto e Funghi",
+			"price": 15.0,
+			"category": "pizza",
+			"image": "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+			"description": "Savory prosciutto ham paired with fresh mushrooms.",
+			"ingredients": ["Tomato sauce", "Mozzarella", "Prosciutto", "Mushrooms"]
+		},
+		{
+			"id": "pizza-diavola",
+			"name": "Diavola",
+			"price": 14.5,
+			"category": "pizza",
+			"image": "https://images.unsplash.com/photo-1588315029754-2dd089d39a1a?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+			"description": "Spicy salami and chili peppers for a kick.",
+			"ingredients": [
+				"Tomato sauce",
+				"Mozzarella",
+				"Spicy Salami",
+				"Chili Peppers"
+			]
+		},
+		{
+			"id": "pizza-vegetariana",
+			"name": "Vegetariana",
+			"price": 13.5,
+			"category": "pizza",
+			"image": "https://images.unsplash.com/photo-1571407970349-bc81e7e96d47?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+			"description": "A healthy mix of fresh roasted vegetables.",
+			"ingredients": [
+				"Tomato sauce",
+				"Mozzarella",
+				"Bell Peppers",
+				"Zucchini",
+				"Eggplant"
+			]
+		},
+		{
+			"id": "pizza-marinara",
+			"name": "Marinara",
+			"price": 10.0,
+			"category": "pizza",
+			"image": "https://images.unsplash.com/photo-1594007654729-407eedc4be65?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+			"description": "Simple, vegan, and full of flavor.",
+			"ingredients": ["Tomato sauce", "Garlic", "Oregano", "Olive Oil"]
+		},
+		{
+			"id": "pizza-bufala",
+			"name": "Bufala",
+			"price": 16.0,
+			"category": "pizza",
+			"image": "https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+			"description": "Featuring premium buffalo mozzarella.",
+			"ingredients": ["Tomato sauce", "Buffalo Mozzarella", "Basil"]
+		},
+		{
+			"id": "pizza-salsiccia",
+			"name": "Salsiccia",
+			"price": 15.5,
+			"category": "pizza",
+			"image": "https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+			"description": "Tasty Italian sausage and onions.",
+			"ingredients": ["Tomato sauce", "Mozzarella", "Italian Sausage", "Onion"]
+		},
+		{
+			"id": "pasta-carbonara",
+			"name": "Carbonara",
+			"price": 14.0,
+			"category": "pasta",
+			"image": "https://images.unsplash.com/photo-1612874742237-98280d20748b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+			"description": "Authentic Roman pasta with egg and guanciale.",
+			"ingredients": [
+				"Spaghetti",
+				"Eggs",
+				"Pecorino Cheese",
+				"Guanciale",
+				"Black Pepper"
+			]
+		},
+		{
+			"id": "pasta-bolognese",
+			"name": "Bolognese",
+			"price": 13.5,
+			"category": "pasta",
+			"image": "https://images.unsplash.com/photo-1626844131082-256783844137?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+			"description": "Slow-cooked beef ragu served over tagliatelle.",
+			"ingredients": [
+				"Tagliatelle",
+				"Ground Beef",
+				"Tomato Sauce",
+				"Carrots",
+				"Celery",
+				"Onions"
+			]
+		},
+		{
+			"id": "pasta-lasagna",
+			"name": "Lasagna",
+			"price": 15.0,
+			"category": "pasta",
+			"image": "https://images.unsplash.com/photo-1574868233972-1e6a3d888602?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+			"description": "Classic layered pasta bake with meat sauce.",
+			"ingredients": [
+				"Pasta Sheets",
+				"Bolognese Sauce",
+				"Béchamel Sauce",
+				"Parmesan"
+			]
+		},
+		{
+			"id": "pasta-fettuccine-alfredo",
+			"name": "Fettuccine Alfredo",
+			"price": 13.0,
+			"category": "pasta",
+			"image": "https://images.unsplash.com/photo-1645112411341-6c4fd023714a?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+			"description": "Rich and creamy butter and parmesan sauce.",
+			"ingredients": ["Fettuccine", "Butter", "Parmesan Cheese"]
+		},
+		{
+			"id": "pasta-pesto",
+			"name": "Pesto Genovese",
+			"price": 12.5,
+			"category": "pasta",
+			"image": "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+			"description": "Fresh basil pesto sauce with pine nuts.",
+			"ingredients": [
+				"Trofie",
+				"Basil",
+				"Pine Nuts",
+				"Parmesan",
+				"Garlic",
+				"Olive Oil"
+			]
+		},
+		{
+			"id": "pasta-arrabbiata",
+			"name": "Penne all'Arrabbiata",
+			"price": 11.5,
+			"category": "pasta",
+			"image": "https://images.unsplash.com/photo-1608835291093-394b0c943a75?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+			"description": "Spicy tomato sauce with garlic and chili.",
+			"ingredients": [
+				"Penne",
+				"Tomato Sauce",
+				"Garlic",
+				"Chili Peppers",
+				"Parsley"
+			]
+		},
+		{
+			"id": "pasta-amatriciana",
+			"name": "Amatriciana",
+			"price": 14.0,
+			"category": "pasta",
+			"image": "https://images.unsplash.com/photo-1551183053-bf91a1d81141?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+			"description": "Savory tomato sauce with cured pork cheek.",
+			"ingredients": [
+				"Bucatini",
+				"Tomato Sauce",
+				"Guanciale",
+				"Pecorino Cheese"
+			]
+		},
+		{
+			"id": "pasta-cacio-e-pepe",
+			"name": "Cacio e Pepe",
+			"price": 12.0,
+			"category": "pasta",
+			"image": "https://images.unsplash.com/photo-1556760544-74068565f05c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+			"description": "Simple and delicious cheese and pepper pasta.",
+			"ingredients": ["Tonnarelli", "Pecorino Romano", "Black Pepper"]
+		},
+		{
+			"id": "pasta-ravioli-spinaci",
+			"name": "Ravioli Ricotta e Spinaci",
+			"price": 14.5,
+			"category": "pasta",
+			"image": "https://images.unsplash.com/photo-1587740986335-27d2db40f3b7?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+			"description": "Stuffed pasta with ricotta cheese and spinach.",
+			"ingredients": ["Ravioli", "Ricotta", "Spinach", "Butter", "Sage"]
+		},
+		{
+			"id": "pasta-gnocchi-sorrentina",
+			"name": "Gnocchi alla Sorrentina",
+			"price": 13.5,
+			"category": "pasta",
+			"image": "https://images.unsplash.com/photo-1551183053-bf91a1d81141?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+			"description": "Baked potato gnocchi with tomato and mozzarella.",
+			"ingredients": ["Potato Gnocchi", "Tomato Sauce", "Mozzarella", "Basil"]
+		},
+		{
+			"id": "dessert-tiramisu",
+			"name": "Tiramisu",
+			"price": 8.0,
+			"category": "dessert",
+			"image": "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+			"description": "Classic coffee-flavored Italian dessert.",
+			"ingredients": [
+				"Ladyfingers",
+				"Mascarpone",
+				"Coffee",
+				"Cocoa Powder",
+				"Eggs"
+			]
+		},
+		{
+			"id": "dessert-panna-cotta",
+			"name": "Panna Cotta",
+			"price": 7.0,
+			"category": "dessert",
+			"image": "https://images.unsplash.com/photo-1488477181946-6428a0291777?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+			"description": "Silky cream pudding with berry coulis.",
+			"ingredients": ["Cream", "Sugar", "Gelatin", "Vanilla", "Berry Coulis"]
+		},
+		{
+			"id": "dessert-cannoli",
+			"name": "Cannoli",
+			"price": 6.5,
+			"category": "dessert",
+			"image": "https://images.unsplash.com/photo-1551024506-0bccd828d307?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+			"description": "Crispy pastry shells filled with sweet ricotta.",
+			"ingredients": [
+				"Pastry Shell",
+				"Ricotta",
+				"Chocolate Chips",
+				"Candied Fruit"
+			]
+		},
+		{
+			"id": "dessert-gelato",
+			"name": "Gelato",
+			"price": 5.0,
+			"category": "dessert",
+			"image": "https://images.unsplash.com/photo-1557142046-c704a3adf364?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+			"description": "Authentic Italian ice cream in various flavors.",
+			"ingredients": ["Milk", "Cream", "Sugar", "Flavoring"]
+		},
+		{
+			"id": "dessert-affogato",
+			"name": "Affogato",
+			"price": 6.0,
+			"category": "dessert",
+			"image": "https://images.unsplash.com/photo-1594631252845-29fc4cc8cde9?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+			"description": "Vanilla gelato drowned in hot espresso.",
+			"ingredients": ["Vanilla Gelato", "Espresso Shot"]
+		},
+		{
+			"id": "drink-coca-cola",
+			"name": "Coca Cola",
+			"price": 3.0,
+			"category": "drinks",
+			"image": "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+			"description": "Refreshing carbonated soft drink.",
+			"ingredients": [
+				"Carbonated Water",
+				"Sugar",
+				"Caramel Color",
+				"Phosphoric Acid"
+			]
+		},
+		{
+			"id": "drink-sparkling-water",
+			"name": "Sparkling Water",
+			"price": 2.5,
+			"category": "drinks",
+			"image": "https://images.unsplash.com/photo-1603394630850-69b3ca8121ca?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+			"description": "Crisp and refreshing carbonated water.",
+			"ingredients": ["Water", "Carbon Dioxide"]
+		},
+		{
+			"id": "drink-chianti",
+			"name": "Chianti Classico",
+			"price": 25.0,
+			"category": "drinks",
+			"image": "https://images.unsplash.com/photo-1559563362-c667ba5f5480?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+			"description": "Full-bodied red wine from Tuscany.",
+			"ingredients": ["Sangiovese Grapes"]
+		},
+		{
+			"id": "drink-pinot-grigio",
+			"name": "Pinot Grigio",
+			"price": 22.0,
+			"category": "drinks",
+			"image": "https://images.unsplash.com/photo-1585553616435-2dc0a54e271d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+			"description": "Light and refreshing white wine.",
+			"ingredients": ["Pinot Grigio Grapes"]
+		},
+		{
+			"id": "drink-espresso",
+			"name": "Espresso",
+			"price": 2.5,
+			"category": "drinks",
+			"image": "https://images.unsplash.com/photo-1610889556528-9a770e32642f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+			"description": "Strong and rich Italian coffee.",
+			"ingredients": ["Coffee Beans", "Water"]
+		}
+	]
+}
