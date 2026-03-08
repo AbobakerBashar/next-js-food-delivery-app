@@ -802,6 +802,7 @@ export async function createOrder(
 	},
 ) {
 	// Create the order
+	console.log("USER ID:", userId);
 	const { data: orders, error: ordersError } = await supabase
 		.from("orders")
 		.select("*")

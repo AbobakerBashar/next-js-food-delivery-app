@@ -39,7 +39,7 @@ export function UserProvider({ children }) {
 				getAddresses(userId),
 				getPaymentMethods(userId),
 			]);
-			setUser({ ...profile, addresses, paymentMethods });
+			setUser({ id: userId, ...profile, addresses, paymentMethods });
 			setIsLoggedIn(true);
 		} catch (error) {
 			if (error instanceof Error) {
