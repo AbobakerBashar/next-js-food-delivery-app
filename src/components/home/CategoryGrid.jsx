@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 const categories = [
@@ -68,18 +69,20 @@ export function CategoryGrid() {
 					<Link
 						key={cat.name}
 						href={`/restaurants?cuisine=${encodeURIComponent(cat.cuisine)}`}
-						className="group flex flex-col items-center gap-2 hover:-translate-y-1 transition-all"
+						className="relative group flex flex-col items-center gap-2 hover:-translate-y-1 transition-all"
 					>
 						<div className="w-full aspect-square rounded-2xl overflow-hidden shadow-sm group-hover:shadow-lg">
-							<img
+							<Image
 								src={cat.image}
 								alt={cat.name}
+								width={100}
+								height={100}
 								className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
 							/>
 						</div>
-						<span className="font-semibold text-sm text-gray-700 dark:text-gray-300 group-hover:text-orange-500 transition-colors">
+						<h4 className="absolute inset-x-0 left-1/2 -translate-x-1/2 w-full bottom-0 font-semibold text-sm text-gray-100 bg-black/80 text-center p-1.5 rounded-b-lg group-hover:text-orange-500 transition-colors">
 							{cat.name}
-						</span>
+						</h4>
 					</Link>
 				))}
 			</div>

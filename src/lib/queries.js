@@ -243,7 +243,10 @@ export async function updateCartQuantity(
 		.select()
 		.single();
 
-	if (error) throw error;
+	if (error) {
+		console.error("Failed to update cart quantity:", error);
+		throw error;
+	}
 	return data;
 }
 
@@ -787,6 +790,7 @@ export async function setDefaultPayment(userId, paymentId) {
  */
 export async function createOrder(
 	userId,
+	stripe_payment_id,
 	{
 		items,
 		deliveryAddress,
@@ -798,22 +802,38 @@ export async function createOrder(
 	},
 ) {
 	// Create the order
+	const { data: orders, error: ordersError } = await supabase
+		.from("orders")
+		.select("*")
+		.eq("user_id", userId);
+
+	if (ordersError) {
+		console.error("Failed to fetch orders:", ordersError);
+		throw new Error("Failed to fetch orders: " + ordersError.message);
+	}
+
+	const order_number = orders.length >= 0 ? orders.length + 1 : 1;
+
 	const { data: order, error: orderError } = await supabase
 		.from("orders")
 		.insert({
 			user_id: userId,
 			status: "confirmed",
 			delivery_address: deliveryAddress,
-			payment_method_id: null,
 			subtotal,
 			delivery_fee: deliveryFee,
 			tax,
 			total,
+			stripe_payment_id,
+			order_number,
 		})
 		.select()
 		.single();
 
-	if (orderError) throw orderError;
+	if (orderError) {
+		console.error("Failed to create order:", orderError);
+		throw new Error("Failed to create order: " + orderError.message);
+	}
 
 	// Create order items
 	const orderItems = items.map((item) => ({
@@ -830,7 +850,10 @@ export async function createOrder(
 		.from("order_items")
 		.insert(orderItems);
 
-	if (itemsError) throw itemsError;
+	if (itemsError) {
+		console.error("Failed to create order items:", itemsError);
+		throw new Error("Failed to create order items: " + itemsError.message);
+	}
 
 	return mapOrder(order);
 }

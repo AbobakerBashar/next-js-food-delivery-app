@@ -64,14 +64,14 @@ export default function RootLayout({ children }) {
 								</div>
 								<Toaster />{" "}
 								<ToastContainer
-									position="top-right"
+									position="top-center"
 									autoClose={3000}
 									hideProgressBar={false}
 									newestOnTop
 									closeOnClick
 									pauseOnHover
 									theme="colored"
-								/>{" "}
+								/>
 							</CartProvider>
 						</FavoritesProvider>
 					</UserProvider>

@@ -1,7 +1,15 @@
+"use client";
+
 import Link from "next/link";
+import { useState, useEffect } from "react";
 import { Star, Clock } from "lucide-react";
 
-export function FeaturedRestaurants({ restaurants, loading }) {
+export function FeaturedRestaurants({ restaurants }) {
+	const [loading, setLoading] = useState();
+	useEffect(() => {
+		if (restaurants.length) setLoading(false);
+		else setLoading(true);
+	}, [restaurants]);
 	if (!restaurants.length && !loading) return null;
 
 	return (

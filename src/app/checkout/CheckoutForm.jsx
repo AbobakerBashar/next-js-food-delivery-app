@@ -71,7 +71,8 @@ export default function CheckoutForm({
 			}
 
 			try {
-				const order = await createOrder(user.id, {
+				const stripe_method_id = paymentIntent.id;
+				const order = await createOrder(user.id, stripe_method_id, {
 					items: cartItems,
 					deliveryAddress: `${formData.address}, ${formData.city} ${formData.zipCode}`,
 					paymentMethodId: paymentIntent.id,
@@ -81,8 +82,8 @@ export default function CheckoutForm({
 					total,
 				});
 
-				clearCart();
-				toast.success("Payment successful!");
+				await clearCart();
+				// toast.success("Payment successful!");
 				router.push(`/order-confirmation/${order.id}`);
 			} catch (orderError) {
 				console.log("Order creation error:", orderError);

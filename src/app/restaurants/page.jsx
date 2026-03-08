@@ -2,7 +2,7 @@
 
 import { Suspense, useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import { RestaurantCard } from "@/components/RestaurantCard";
+import { RestaurantCard } from "@/components/home/RestaurantCard";
 import { getRestaurants } from "@/lib/queries";
 import { SlidersHorizontal } from "lucide-react";
 
