@@ -2,14 +2,16 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Mail, Lock, Eye, EyeOff, UtensilsCrossed } from "lucide-react";
 import { useUser } from "@/contexts/UserContext";
 import { toast } from "react-toastify";
 
 export default function LoginPage() {
-	const { login, isLoggedIn } = useUser();
-	console.log(isLoggedIn);
+	const { login, isLoggedIn, signInWithGoogle } = useUser();
+	const searchParams = useSearchParams();
+	const redirect = searchParams.get("redirect") || "/profile";
+
 	const router = useRouter();
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
@@ -18,7 +20,7 @@ export default function LoginPage() {
 
 	// Redirect if already logged in
 	if (isLoggedIn) {
-		router.push("/profile");
+		router.push(redirect);
 		return null;
 	}
 
@@ -34,7 +36,7 @@ export default function LoginPage() {
 		const result = await login(email, password);
 		if (result.success) {
 			toast.success("Welcome back!");
-			router.push("/");
+			router.push(redirect);
 		} else {
 			toast.error(result.error);
 		}
@@ -167,7 +169,10 @@ export default function LoginPage() {
 
 					{/* Social Login */}
 					<div className="grid grid-cols-2 gap-3">
-						<button className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-sm font-medium">
+						<button
+							onClick={signInWithGoogle}
+							className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-sm font-medium"
+						>
 							<svg className="w-5 h-5" viewBox="0 0 24 24">
 								<path
 									d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"

@@ -459,6 +459,10 @@ export async function signUp(name, email, password) {
 }
 
 /**
+ *
+ * Go with Google OAuth */
+
+/**
  * Sign in with email and password
  */
 export async function signIn(email, password) {
@@ -516,6 +520,9 @@ export function onAuthStateChange(callback) {
 /**
  * Fetch user profile by ID
  */
+
+// All profiles
+
 export async function getProfile(userId) {
 	const { data, error } = await supabase
 		.from("profiles")

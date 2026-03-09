@@ -34,7 +34,7 @@ export default function CheckoutForm({
 
 		if (!isLoggedIn) {
 			toast.error("Please log in to place an order");
-			router.push("/login");
+			router.push("/login?redirect=/checkout");
 			return;
 		}
 
@@ -83,7 +83,7 @@ export default function CheckoutForm({
 				});
 
 				await clearCart();
-				// toast.success("Payment successful!");
+				toast.success("Payment successful!");
 				router.push(`/order-confirmation/${order.id}`);
 			} catch (orderError) {
 				console.log("Order creation error:", orderError);

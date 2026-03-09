@@ -1,29 +1,30 @@
 "use client";
 
 import {
-	createContext,
-	useContext,
-	useState,
-	useEffect,
-	useCallback,
-} from "react";
-import { supabase } from "@/lib/supabase";
-import {
-	signUp as supabaseSignUp,
+	getAddresses,
+	getCurrentUser,
+	getPaymentMethods,
+	getProfile,
+	addAddress as supabaseAddAddress,
+	addPaymentMethod as supabaseAddPaymentMethod,
+	removeAddress as supabaseRemoveAddress,
+	removePaymentMethod as supabaseRemovePaymentMethod,
+	setDefaultAddress as supabaseSetDefaultAddress,
+	setDefaultPayment as supabaseSetDefaultPayment,
 	signIn as supabaseSignIn,
 	signOut as supabaseSignOut,
-	getProfile,
-	updateProfile as supabaseUpdateProfile,
-	getAddresses,
-	addAddress as supabaseAddAddress,
+	signUp as supabaseSignUp,
 	updateAddress as supabaseUpdateAddress,
-	removeAddress as supabaseRemoveAddress,
-	setDefaultAddress as supabaseSetDefaultAddress,
-	getPaymentMethods,
-	addPaymentMethod as supabaseAddPaymentMethod,
-	removePaymentMethod as supabaseRemovePaymentMethod,
-	setDefaultPayment as supabaseSetDefaultPayment,
+	updateProfile as supabaseUpdateProfile,
 } from "@/lib/queries";
+import { supabase } from "@/lib/supabase";
+import {
+	createContext,
+	useCallback,
+	useContext,
+	useEffect,
+	useState,
+} from "react";
 
 const UserContext = createContext(null);
 
@@ -35,11 +36,16 @@ export function UserProvider({ children }) {
 	const loadUserData = useCallback(async (userId) => {
 		try {
 			const [profile, addresses, paymentMethods] = await Promise.all([
-				getProfile(userId),
+				getCurrentUser(),
 				getAddresses(userId),
 				getPaymentMethods(userId),
 			]);
-			setUser({ id: userId, ...profile, addresses, paymentMethods });
+			setUser({
+				id: userId,
+				...profile?.user_metadata,
+				addresses,
+				paymentMethods,
+			});
 			setIsLoggedIn(true);
 		} catch (error) {
 			if (error instanceof Error) {
@@ -86,7 +92,18 @@ export function UserProvider({ children }) {
 			return { success: false, error: error.message };
 		}
 	};
-
+	const goWithGoogle = async () => {
+		try {
+			const { data, error } = await supabase.auth.signInWithOAuth({
+				provider: "google",
+				options: {
+					redirectTo: `${window.location.origin}/callback`,
+				},
+			});
+		} catch (error) {
+			return { success: false, error: error.message };
+		}
+	};
 	const signup = async (name, email, password) => {
 		try {
 			await supabaseSignUp(name, email, password);
@@ -251,6 +268,8 @@ export function UserProvider({ children }) {
 				addPaymentMethod,
 				removePaymentMethod,
 				setDefaultPayment,
+				signInWithGoogle: goWithGoogle,
+				signUpWithGoogle: goWithGoogle,
 				logout,
 			}}
 		>

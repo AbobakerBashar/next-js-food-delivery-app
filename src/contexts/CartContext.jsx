@@ -46,6 +46,7 @@ export function CartProvider({ children }) {
 	}, [isLoggedIn, user?.id, loadCart]);
 
 	const addToCart = async (item) => {
+		console.log("Adding to cart:", item);
 		// Optimistic local update
 		setCartItems((prev) => {
 			const existingItem = prev.find(
