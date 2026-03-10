@@ -51,7 +51,7 @@ export default function LoginPage() {
 					<div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-orange-100 dark:bg-orange-900/30 mb-4">
 						<UtensilsCrossed className="w-8 h-8 text-orange-500" />
 					</div>
-					<h1 className="text-3xl font-bold mb-2">Welcome Back</h1>
+					<h1 className="text-3xl font-bold mb-2">Welcome to our estaurant</h1>
 					<p className="text-gray-500 dark:text-gray-400">
 						Sign in to your account to continue
 					</p>
