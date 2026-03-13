@@ -1,6 +1,7 @@
 "use client";
 
 import { supabase } from "@/lib/supabase";
+import { UtensilsCrossed } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 // import { supabase } from "@/lib/supabase";
@@ -17,12 +18,12 @@ export default function AuthCallbackPage() {
 			if (!session) return router.push("/login");
 
 			const user = session.user;
-			console.log("Auth callback received user:", user);
+
 			// Create or update profile
 			const { data: existing, error } = await supabase
 				.from("profiles")
 				.select("*")
-				.eq("email", session.user.email)
+				.eq("user_id", session.user.id)
 				.maybeSingle();
 			if (error) throw error;
 			if (!existing) {
@@ -45,5 +46,15 @@ export default function AuthCallbackPage() {
 		process();
 	}, []);
 
-	return <p>Signing you in...</p>;
+	return (
+		<div className="w-full h-20 my-8 flex items-center justify-center gap-3">
+			<p className="text-lg font-medium">Signing you in...</p>
+			<div className="relative">
+				<div className="w-8 h-8 rounded-full border-4 border-orange-200 dark:border-orange-900/40 border-t-orange-500 dark:border-t-orange-500 animate-spin" />
+				<div className="absolute inset-0 flex items-center justify-center">
+					<UtensilsCrossed className="w-4 h-4 text-orange-500 animate-pulse" />
+				</div>
+			</div>
+		</div>
+	);
 }

@@ -479,7 +479,7 @@ export async function signIn(email, password) {
  * Sign out
  */
 export async function signOut() {
-	const { error } = await supabase.auth.signOut();
+	const { error } = await supabase.auth.signOut({ scope: "global" });
 	if (error) throw error;
 }
 
@@ -527,7 +527,7 @@ export async function getProfile(userId) {
 	const { data, error } = await supabase
 		.from("profiles")
 		.select("*")
-		.eq("id", userId)
+		.eq("user_id", userId)
 		.single();
 
 	if (error && error.code !== "PGRST116") throw error;
@@ -537,7 +537,7 @@ export async function getProfile(userId) {
 		name: data.name,
 		email: data.email,
 		phone: data.phone || "",
-		avatar: data.avatar_url || "",
+		avatar_url: data.avatar || "",
 	};
 }
 
@@ -553,7 +553,7 @@ export async function updateProfile(userId, { name, email, phone }) {
 	const { data, error } = await supabase
 		.from("profiles")
 		.update(updates)
-		.eq("id", userId)
+		.eq("user_id", userId)
 		.select()
 		.single();
 
@@ -566,6 +566,45 @@ export async function updateProfile(userId, { name, email, phone }) {
 		avatar: data.avatar_url || "",
 	};
 }
+
+// Update avatar URL
+export const updateAvatar = async (newAvatar, userId) => {
+	if (!newAvatar) return;
+	try {
+		const ext = newAvatar.name.split(".").pop();
+		const uniqueName = `${userId}-${crypto.randomUUID()}.${ext}`;
+
+		const { data, error: uploadError } = await supabase.storage
+			.from("avatars")
+			.upload(`${uniqueName}`, newAvatar);
+
+		if (uploadError) {
+			console.error("Avatar upload error:", uploadError);
+			throw uploadError;
+		}
+
+		const { data: urlData } = await supabase.storage
+			.from("avatars")
+			.getPublicUrl(uniqueName);
+
+		const avatar = urlData.publicUrl;
+
+		const { data: insetData, error: updateError } = await supabase
+			.from("profiles")
+			.update({ avatar })
+			.eq("user_id", userId)
+			.select()
+			.single();
+		if (updateError) {
+			console.error("Profile update error:", updateError);
+			throw updateError;
+		}
+		return insetData;
+	} catch (error) {
+		console.error("Error in updateAvatar:", error);
+		throw error;
+	}
+};
 
 // ============================================================
 // ADDRESSES (per user)
@@ -670,12 +709,17 @@ export async function updateAddress(addressId, updates) {
  * Remove an address
  */
 export async function removeAddress(addressId) {
-	const { error } = await supabase
-		.from("addresses")
-		.delete()
-		.eq("id", addressId);
+	try {
+		const { error } = await supabase
+			.from("addresses")
+			.delete()
+			.eq("id", addressId);
 
-	if (error) throw error;
+		if (error) throw error;
+	} catch (error) {
+		console.error("Failed to remove address:", error);
+		throw error;
+	}
 }
 
 /**
