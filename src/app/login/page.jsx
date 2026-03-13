@@ -52,7 +52,7 @@ export default function LoginPage() {
 						<UtensilsCrossed className="w-8 h-8 text-orange-500" />
 					</div>
 					<h1 className="text-3xl font-bold mb-2">
-						Welcome Back to our restarant
+						Welcome Back to Our Restaurant
 					</h1>
 					<p className="text-gray-500 dark:text-gray-400">
 						Sign in to your account to continue

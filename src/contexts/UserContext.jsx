@@ -35,14 +35,17 @@ export function UserProvider({ children }) {
 
 	const loadUserData = useCallback(async (userId) => {
 		try {
-			const [profile, addresses, paymentMethods] = await Promise.all([
-				getCurrentUser(),
-				getAddresses(userId),
-				getPaymentMethods(userId),
-			]);
+			const [profile, currentUser, addresses, paymentMethods] =
+				await Promise.all([
+					getProfile(userId),
+					getCurrentUser(),
+					getAddresses(userId),
+					getPaymentMethods(userId),
+				]);
 			setUser({
+				...profile,
 				id: userId,
-				...profile?.user_metadata,
+				...currentUser?.user_metadata,
 				addresses,
 				paymentMethods,
 			});
@@ -132,6 +135,7 @@ export function UserProvider({ children }) {
 			const userId = session?.user?.id;
 			if (!userId) return;
 			const updated = await supabaseUpdateProfile(userId, updates);
+
 			setUser((prev) => ({ ...prev, ...updated }));
 		} catch (error) {
 			console.error("Update profile error:", error);
@@ -144,9 +148,11 @@ export function UserProvider({ children }) {
 			const {
 				data: { session },
 			} = await supabase.auth.getSession();
+
 			const userId = session?.user?.id;
 			if (!userId) return;
 			const newAddress = await supabaseAddAddress(userId, address);
+
 			setUser((prev) => ({
 				...prev,
 				addresses: [...(prev.addresses || []), newAddress],
@@ -180,13 +186,9 @@ export function UserProvider({ children }) {
 		}
 	};
 
-	const setDefaultAddress = async (id) => {
+	const setDefaultAddress = async (userId, id) => {
 		if (!user) return;
 		try {
-			const {
-				data: { session },
-			} = await supabase.auth.getSession();
-			const userId = session?.user?.id;
 			if (!userId) return;
 			await supabaseSetDefaultAddress(userId, id);
 			setUser((prev) => ({

@@ -20,9 +20,7 @@ export default function RootLayout({ children }) {
 		<html lang="en" suppressHydrationWarning>
 			<body>
 				<ThemeProvider>
-					{" "}
 					<UserProvider>
-						{" "}
 						<FavoritesProvider>
 							<CartProvider>
 								<div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 transition-colors">
