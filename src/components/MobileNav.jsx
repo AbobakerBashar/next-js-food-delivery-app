@@ -44,7 +44,7 @@ const MobileNav = ({
 					onClick={() => setShowMobileNav(false)}
 					className={`relative flex items-center gap-1 hover:text-orange-500 transition-colors shadow shadow-gray-400 dark:shadow-gray-600 px-2 py-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 ${pathname === "/favorites" ? "text-orange-500" : ""}`}
 				>
-					<Heart className="w-5 h-5" /> <span>Favourites</span>
+					<Heart className="w-5 h-5" /> <span>Favorites</span>
 					{favCount > 0 && (
 						<span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
 							{favCount}

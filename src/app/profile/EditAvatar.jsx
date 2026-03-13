@@ -9,18 +9,19 @@ const EditAvatar = ({ setEditingAvatar, avatar_url, user_id }) => {
 
 	const handleSave = async (e) => {
 		e.preventDefault();
-		setLoading(true);
 		const formData = new FormData(e.target);
 		const file = formData.get("avatar_url");
 		if (!file || file.size === 0) return;
 		try {
+			setLoading(true);
 			const res = await updateAvatar(file, user_id);
-
 			setLoading(false);
+			setEditingAvatar(false);
 		} catch (error) {
 			console.error("Error updating avatar:", error);
+		} finally {
+			setLoading(false);
 		}
-		setEditingAvatar(false);
 	};
 
 	const handleCancel = () => {
