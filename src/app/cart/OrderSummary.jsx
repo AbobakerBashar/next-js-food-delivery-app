@@ -28,12 +28,12 @@ export default function OrderSummary({ subtotal, deliveryFee, tax, total }) {
 					</div>
 				</div>
 
-				<button
-					onClick={() => router.push("/checkout")}
-					className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-full transition-colors"
+				<Link
+					href="/checkout"
+					className="w-full block text-center bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-full transition-colors"
 				>
 					Proceed to Checkout
-				</button>
+				</Link>
 
 				<Link
 					href="/"

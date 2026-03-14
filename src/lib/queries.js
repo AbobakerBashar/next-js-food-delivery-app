@@ -845,15 +845,16 @@ export async function createOrder(
 	{
 		items,
 		deliveryAddress,
-		paymentMethodId,
 		subtotal,
 		deliveryFee,
 		tax,
 		total,
+		deliveryCity,
+		deliveryZipCode,
 	},
 ) {
 	// Create the order
-	console.log("USER ID:", userId);
+
 	const { data: orders, error: ordersError } = await supabase
 		.from("orders")
 		.select("*")
@@ -872,6 +873,8 @@ export async function createOrder(
 			user_id: userId,
 			status: "confirmed",
 			delivery_address: deliveryAddress,
+			delivery_city: deliveryCity,
+			delivery_zip: deliveryZipCode,
 			subtotal,
 			delivery_fee: deliveryFee,
 			tax,
@@ -916,23 +919,23 @@ export async function createOrder(
 export async function getOrderById(orderId) {
 	const { data: order, error: orderError } = await supabase
 		.from("orders")
-		.select("*, order_items(*)")
+		.select("*, order_items(id,name, price, quantity, restaurants(name))")
 		.eq("id", orderId)
 		.single();
 
 	if (orderError) throw orderError;
-
-	return {
-		...mapOrder(order),
-		items: order.order_items.map((item) => ({
-			id: item.menu_item_id,
-			restaurantId: item.restaurant_id,
-			name: item.name,
-			price: Number(item.price),
-			quantity: item.quantity,
-			imageUrl: item.image_url,
-		})),
-	};
+	return order;
+	// return {
+	// 	...mapOrder(order),
+	// 	items: order.order_items.map((item) => ({
+	// 		id: item.menu_item_id,
+	// 		restaurantId: item.restaurant_id,
+	// 		name: item.name,
+	// 		price: Number(item.price),
+	// 		quantity: item.quantity,
+	// 		imageUrl: item.image_url,
+	// 	})),
+	// };
 }
 
 /**
@@ -1093,4 +1096,122 @@ function mapOrder(row) {
 		total: Number(row.total),
 		createdAt: row.created_at,
 	};
+}
+
+// ============================================================
+// Get Available Drivers
+// ============================================================
+export async function getAvailableDrivers() {
+	try {
+		const { data, error } = await supabase
+			.from("drivers")
+			.select("*")
+			.eq("status", "available");
+
+		return data;
+	} catch (error) {
+		console.log("Error fetching available drivers:", error);
+		throw error;
+	}
+}
+
+// ============================================================
+// Update Driver Status
+// ============================================================
+export async function updateDriver(id) {
+	try {
+		const { data, error } = await supabase
+			.from("drivers")
+			.update("*")
+			.eq("id", id);
+
+		if (error) throw error;
+		return data;
+	} catch (error) {
+		console.log("Error updating driver status:", error);
+		throw error;
+	}
+}
+
+// ============================================================
+// Create Delivery
+// ============================================================
+export async function createDelivery(delivery) {
+	try {
+		const { data, error } = await supabase.from("deliveries").insert(delivery);
+
+		if (error) throw error;
+		return data;
+	} catch (error) {
+		console.log("Create Delivery Error:", error.message);
+	}
+}
+// ============================================================
+// Update Delivery
+// ============================================================
+export async function updateDelivery(delivery) {
+	try {
+		const { data, error } = await supabase
+			.from("deliveries")
+			.update(delivery)
+			.eq("id", delivery.id);
+
+		if (error) throw error;
+		return data;
+	} catch (error) {
+		console.log("Update Delivery Error:", error.message);
+	}
+}
+// ============================================================
+// Get Delivery
+// ============================================================
+export async function getDelivery(id) {
+	try {
+		const { data, error } = await supabase
+			.from("deliveries")
+			.select("*, drivers(*)")
+			.eq("order_id", id)
+			.single();
+
+		if (error) throw error;
+		return data;
+	} catch (error) {
+		console.log("Get Delivery Error:", error.message);
+	}
+}
+
+// ============================================================
+// Get Order Driver
+// ============================================================
+export async function getOrderDriver(orderId) {
+	try {
+		const { data, error } = await supabase
+			.from("deliveries")
+			.select("drivers(*)")
+			.eq("order_id", orderId)
+			.maybeSingle();
+
+		if (error) throw error;
+		return data?.drivers || data;
+	} catch (error) {
+		console.log("Get Order Driver Error:", error.message);
+	}
+}
+
+// ============================================================
+// Send Support Message
+// ============================================================
+export async function sendSupportMessage(sender_id, orderId, message) {
+	try {
+		const { data, error } = await supabase.from("support_messages").insert({
+			order_id: orderId,
+			message,
+			sender_id,
+		});
+
+		if (error) throw error;
+		return data;
+	} catch (error) {
+		console.log("Send Support Message Error:", error.message);
+	}
 }

@@ -18,19 +18,6 @@ const getData = async () => {
 
 export default async function HomePage() {
 	const { featuredRestaurants, popularDishes } = await getData();
-	// const [featuredRestaurants, setFeaturedRestaurants] = useState([]);
-	// const [popularDishes, setPopularDishes] = useState([]);
-	// const [loading, setLoading] = useState(true);
-
-	// useEffect(() => {
-	// 	Promise.all([getFeaturedRestaurants(3), getPopularDishes(9)])
-	// 		.then(([restaurants, dishes]) => {
-	// 			setFeaturedRestaurants(restaurants);
-	// 			setPopularDishes(dishes);
-	// 		})
-	// 		.catch(console.error)
-	// 		.finally(() => setLoading(false));
-	// }, []);
 
 	return (
 		<div>

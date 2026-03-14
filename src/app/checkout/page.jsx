@@ -2,22 +2,27 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Elements } from "@stripe/react-stripe-js";
-import LoadingIndicator from "./LoadingIndicator";
-import { useCart } from "@/contexts/CartContext";
 import { getStripe } from "@/lib/stripe";
+import { Elements } from "@stripe/react-stripe-js";
+import { useUser } from "@/contexts/UserContext";
+import { useCart } from "@/contexts/CartContext";
+import LoadingIndicator from "./LoadingIndicator";
 import CheckoutForm from "./CheckoutForm";
 
 export default function CheckoutPage() {
 	const { cartItems, loading: cartLoading, getCartTotal } = useCart();
+	const { user } = useUser();
 	const router = useRouter();
-
 	const [clientSecret, setClientSecret] = useState("");
-	const [formData, setFormData] = useState({
+	const [personalInfo, setPersonalInfo] = useState({
 		fullName: "",
 		email: "",
 		phone: "",
-		address: "",
+	});
+
+	const [address, setAddress] = useState({
+		label: "",
+		street: "",
 		city: "",
 		zipCode: "",
 	});
@@ -27,34 +32,53 @@ export default function CheckoutPage() {
 	const tax = subtotal * 0.08;
 	const total = subtotal + deliveryFee + tax;
 
-	const handleChange = (e) => {
-		setFormData({
-			...formData,
-			[e.target.name]: e.target.value,
-		});
-	};
+	// Check if user is logged in to set default info and redirect to login if not
+	useEffect(() => {
+		if (!user) {
+			router.push("/login?redirect=/checkout");
+		} else {
+			setPersonalInfo({
+				fullName: user.name,
+				email: user.email,
+				phone: user.phone,
+			});
+			setAddress(
+				user.addresses?.find((addr) => addr.isDefault === true) || {
+					label: "",
+					street: "",
+					city: "",
+					zipCode: "",
+				},
+			);
+		}
+	}, [user, router]);
 
 	// Create PaymentIntent only after cart is loaded
 	useEffect(() => {
 		if (cartLoading || cartItems.length === 0 || total <= 0) return;
-
-		fetch("/api/create-payment-intent", {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({
-				amount: total,
-				metadata: {
-					itemCount: cartItems.length,
-				},
-			}),
-		})
-			.then((res) => res.json())
-			.then((data) => {
+		const fetchPaymentIntent = async () => {
+			try {
+				const response = await fetch("/api/create-payment-intent", {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({
+						amount: total,
+						metadata: {
+							itemCount: cartItems.length,
+						},
+					}),
+				});
+				const data = await response.json();
 				if (data.clientSecret) {
 					setClientSecret(data.clientSecret);
+				} else {
+					console.error("No client secret returned from API");
 				}
-			})
-			.catch((err) => console.error("Payment intent error:", err));
+			} catch (err) {
+				console.error("Payment intent error:", err);
+			}
+		};
+		fetchPaymentIntent();
 	}, [cartLoading, total, cartItems.length]);
 
 	// Only redirect to cart after loading is done and cart is truly empty
@@ -67,6 +91,13 @@ export default function CheckoutPage() {
 	if (cartLoading || cartItems.length === 0) {
 		return <LoadingIndicator message="Loading cart..." />;
 	}
+
+	const handlePersonalInfoChange = (e) => {
+		setPersonalInfo({
+			...personalInfo,
+			[e.target.name]: e.target.value,
+		});
+	};
 
 	return (
 		<div className="container mx-auto px-4 py-8">
@@ -87,8 +118,11 @@ export default function CheckoutPage() {
 					}}
 				>
 					<CheckoutForm
-						formData={formData}
-						handleChange={handleChange}
+						personalInfo={personalInfo}
+						setPersonalInfo={setPersonalInfo}
+						address={address}
+						setAddress={setAddress}
+						handlePersonalInfoChange={handlePersonalInfoChange}
 						total={total}
 						subtotal={subtotal}
 						deliveryFee={deliveryFee}

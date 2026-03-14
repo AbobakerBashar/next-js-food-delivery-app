@@ -3,7 +3,7 @@ import { User } from "lucide-react";
 const inputClassName =
 	"w-full px-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors";
 
-export default function PersonalInfoSection({ formData, handleChange }) {
+export default function PersonalInfoSection({ personalInfo, handleChange }) {
 	return (
 		<div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm transition-colors">
 			<div className="flex items-center gap-2 mb-6">
@@ -19,7 +19,7 @@ export default function PersonalInfoSection({ formData, handleChange }) {
 					<input
 						type="text"
 						name="fullName"
-						value={formData.fullName}
+						value={personalInfo.fullName}
 						onChange={handleChange}
 						required
 						className={inputClassName}
@@ -32,7 +32,7 @@ export default function PersonalInfoSection({ formData, handleChange }) {
 					<input
 						type="email"
 						name="email"
-						value={formData.email}
+						value={personalInfo.email}
 						onChange={handleChange}
 						required
 						className={inputClassName}
@@ -45,7 +45,7 @@ export default function PersonalInfoSection({ formData, handleChange }) {
 					<input
 						type="tel"
 						name="phone"
-						value={formData.phone}
+						value={personalInfo.phone}
 						onChange={handleChange}
 						required
 						className={inputClassName}

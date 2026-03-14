@@ -1,7 +1,7 @@
 "use client";
 
 import { useFavorites } from "@/contexts/FavoritesContext";
-import { toast } from "sonner";
+import { toast } from "react-toastify";
 import Link from "next/link";
 import { ChevronRight, Heart, Plus } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
