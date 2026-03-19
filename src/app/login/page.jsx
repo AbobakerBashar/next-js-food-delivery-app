@@ -6,15 +6,19 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Mail, Lock, Eye, EyeOff, UtensilsCrossed } from "lucide-react";
 import { useUser } from "@/contexts/UserContext";
 import { toast } from "react-toastify";
+import { useGoogleLogin, useLogin } from "@/hooks/useUser";
 
 export default function LoginPage() {
-	const { login, isLoggedIn, signInWithGoogle } = useUser();
+	const { isLoggedIn } = useUser();
+	const { login } = useLogin();
+	const { googleLogin } = useGoogleLogin();
+
 	const searchParams = useSearchParams();
 	const redirect = searchParams.get("redirect") || "/profile";
 
 	const router = useRouter();
-	const [email, setEmail] = useState("");
-	const [password, setPassword] = useState("");
+	const [email, setEmail] = useState("beko@gmail.com");
+	const [password, setPassword] = useState("123456");
 	const [showPassword, setShowPassword] = useState(false);
 	const [loading, setLoading] = useState(false);
 
@@ -31,16 +35,28 @@ export default function LoginPage() {
 			toast.error("Please fill in all fields");
 			return;
 		}
-
-		setLoading(true);
-		const result = await login(email, password);
-		if (result.success) {
+		try {
+			setLoading(true);
+			await login({ email, password });
 			toast.success("Welcome back!");
 			router.push(redirect);
-		} else {
-			toast.error(result.error);
+		} catch (error) {
+			console.error("Login error:", error);
+			toast.error(error.message);
+		} finally {
+			setLoading(false);
 		}
-		setLoading(false);
+	};
+
+	const signInWithGoogle = async () => {
+		try {
+			setLoading(true);
+			await googleLogin();
+		} catch (error) {
+			toast.error(googleError.message);
+		} finally {
+			setLoading(false);
+		}
 	};
 
 	return (

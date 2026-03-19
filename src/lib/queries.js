@@ -538,6 +538,7 @@ export async function getProfile(userId) {
 		email: data.email,
 		phone: data.phone || "",
 		avatar_url: data.avatar || "",
+		role: data.role || "user",
 	};
 }
 
@@ -917,25 +918,42 @@ export async function createOrder(
  * Fetch an order by ID with its items
  */
 export async function getOrderById(orderId) {
-	const { data: order, error: orderError } = await supabase
+	const { data, error } = await supabase
 		.from("orders")
-		.select("*, order_items(id,name, price, quantity, restaurants(name))")
+		.select(
+			`
+			*,
+			order_items (
+				id,
+				name,
+				price,
+				quantity,
+				image_url,
+				menu_item_id,
+				restaurant_id,
+				restaurants(name)
+			)
+		`,
+		)
 		.eq("id", orderId)
 		.single();
 
-	if (orderError) throw orderError;
-	return order;
-	// return {
-	// 	...mapOrder(order),
-	// 	items: order.order_items.map((item) => ({
-	// 		id: item.menu_item_id,
-	// 		restaurantId: item.restaurant_id,
-	// 		name: item.name,
-	// 		price: Number(item.price),
-	// 		quantity: item.quantity,
-	// 		imageUrl: item.image_url,
-	// 	})),
-	// };
+	if (error) throw error;
+
+	return {
+		...mapOrder(data),
+		items:
+			data.order_items?.map((item) => ({
+				id: item.menu_item_id,
+				restaurantId: item.restaurant_id,
+				restaurantName: item.restaurants?.name || "Unknown",
+				name: item.name,
+				price: Number(item.price),
+				quantity: item.quantity,
+				imageUrl: item.image_url,
+			})) || [],
+		delivery_address: data.delivery_address,
+	};
 }
 
 /**
@@ -973,7 +991,7 @@ export async function updateOrderStatus(orderId, status) {
 		.eq("id", orderId)
 		.select()
 		.single();
-
+	console.log("Order status updated:", data);
 	if (error) throw error;
 	return mapOrder(data);
 }
@@ -1099,6 +1117,147 @@ function mapOrder(row) {
 }
 
 // ============================================================
+// ADMIN QUERIES
+// ============================================================
+
+/**
+ * Get admin dashboard stats
+ */
+export async function getAdminStats() {
+	const [
+		{ count: orderCount },
+		{ count: restaurantCount },
+		{ count: userCount },
+		{ data: revenueData },
+		{ data: avgRating },
+		{ data: avgDeliveryTime },
+	] = await Promise.all([
+		supabase.from("orders").select("*", { count: "exact", head: true }),
+		supabase.from("restaurants").select("*", { count: "exact", head: true }),
+		supabase.from("profiles").select("*", { count: "exact", head: true }),
+		supabase
+			.from("orders")
+			.select("sum(total)::numeric", { count: "exact", head: true }),
+		supabase.from("restaurants").select("avg(rating)::numeric"),
+		supabase.from("restaurants").select("avg(delivery_time)"),
+	]);
+
+	const totalRevenue = revenueData?.[0]?.sum || 0;
+	const averageRating = avgRating?.[0]?.avg || 0;
+	const averageDeliveryTime = avgDeliveryTime?.[0]?.avg || 0;
+
+	return {
+		orderCount: orderCount || 0,
+		restaurantCount: restaurantCount || 0,
+		userCount: userCount || 0,
+		totalRevenue: parseFloat(totalRevenue),
+		averageRating: parseFloat(averageRating).toFixed(1),
+		averageDeliveryTime: Math.round(parseFloat(averageDeliveryTime)),
+	};
+}
+
+/**
+ * Get recent orders for admin (with basic item info)
+ */
+export async function getRecentOrders({ limit = 10, status } = {}) {
+	let query = supabase
+		.from("orders")
+		.select(
+			`
+			*, 
+			profiles(name),
+			order_items!inner(name,quantity,price),
+			restaurants(name)
+		`,
+		)
+		.order("created_at", { ascending: false })
+		.limit(limit);
+
+	if (status) {
+		query = query.eq("status", status);
+	}
+
+	const { data, error } = await query;
+	if (error) throw error;
+
+	return data.map((order) => ({
+		...mapOrder(order),
+		userName: order.profiles?.name,
+		restaurantName: order.restaurants?.name,
+		itemCount: order.order_items?.length || 0,
+		itemsPreview:
+			order.order_items
+				?.slice(0, 3)
+				.map((item) => `${item.name} x${item.quantity}`) || [],
+	}));
+}
+
+/**
+ * Get all restaurants for admin view (with stats)
+ */
+export async function getAllRestaurantsAdmin({ limit = 50 } = {}) {
+	const { data, error } = await supabase
+		.from("restaurants")
+		.select(
+			`
+			*, 
+			count(orders.id) as order_count,
+			sum(orders.total)::numeric as total_revenue
+		`,
+		)
+		.limit(limit);
+
+	if (error) throw error;
+	return data.map((restaurant) => ({
+		...mapRestaurant(restaurant),
+		orderCount: parseInt(restaurant.order_count) || 0,
+		totalRevenue: parseFloat(restaurant.total_revenue) || 0,
+	}));
+}
+
+/**
+ * Get all users for admin
+ */
+export async function getAllUsersAdmin({ limit = 50 } = {}) {
+	const { data, error } = await supabase
+		.from("profiles")
+		.select(
+			`
+			*, 
+			count(orders.id) as order_count
+		`,
+		)
+		.order("created_at", { ascending: false })
+		.limit(limit);
+
+	if (error) throw error;
+	return data.map((profile) => ({
+		id: profile.id,
+		name: profile.name,
+		email: profile.email,
+		phone: profile.phone || "",
+		orderCount: parseInt(profile.order_count) || 0,
+		role: profile.role || "user",
+		createdAt: profile.created_at,
+	}));
+}
+
+/**
+ * Update profile role (admin only)
+ */
+export async function updateUserRole(userId, role) {
+	const { data, error } = await supabase
+		.from("profiles")
+		.update({ role })
+		.eq("id", userId)
+		.select()
+		.single();
+
+	if (error) throw error;
+	return data;
+}
+
+// ============================================================
 // Get Available Drivers
 // ============================================================
 export async function getAvailableDrivers() {
@@ -1118,14 +1277,15 @@ export async function getAvailableDrivers() {
 // ============================================================
 // Update Driver Status
 // ============================================================
-export async function updateDriver(id) {
+export async function updateDriver(id, updates) {
 	try {
 		const { data, error } = await supabase
 			.from("drivers")
-			.update("*")
+			.update(updates)
 			.eq("id", id);
 
 		if (error) throw error;
+		console.log("Driver updated:", data);
 		return data;
 	} catch (error) {
 		console.log("Error updating driver status:", error);

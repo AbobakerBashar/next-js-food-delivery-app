@@ -1,28 +1,41 @@
 "use client";
 
-import { useCart } from "@/contexts/CartContext";
-import { useFavorites } from "@/contexts/FavoritesContext";
-import { useUser } from "@/contexts/UserContext";
-import { Menu, Search, UtensilsCrossed, X } from "lucide-react";
+import { useGetCart } from "@/hooks/useCart";
+import {
+	useGetFavoriteDishes,
+	useGetFavoriteRestaurants,
+} from "@/hooks/useFavorits";
+import { useCurrentUser } from "@/hooks/useUser";
+import { Menu, Search, UtensilsCrossed } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import MobileNav from "./MobileNav";
 import DesktopNav from "./DesktopNav";
+import MobileNav from "./MobileNav";
 
 export function Header() {
-	const [showMobileNav, setShowMobileNav] = useState(false);
-	const { getCartCount } = useCart();
-	const { getFavoritesCount } = useFavorites();
-	const { isLoggedIn } = useUser();
-	const favCount = getFavoritesCount();
 	const pathname = usePathname();
 	const router = useRouter();
+
 	const searchParams = useSearchParams();
-	const cartCount = getCartCount();
+	const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
 	const showSearch = pathname === "/" || pathname === "/restaurants";
 
-	const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
+	const [showMobileNav, setShowMobileNav] = useState(false);
+
+	const { data: user } = useCurrentUser();
+
+	const { data: cart, isLoading: isLoadingCart } = useGetCart(user?.id);
+	const cartCount =
+		cart?.reduce((total, item) => total + item.quantity, 0) || 0;
+
+	// Calculate favorites count
+	const { data: dishes, isLoading: isLoadingDishes } = useGetFavoriteDishes(
+		user?.id,
+	);
+	const { data: restaurants, isLoading: isLoadingRestaurants } =
+		useGetFavoriteRestaurants(user?.id);
+	const favCount = dishes?.length + restaurants?.length || 0;
 
 	useEffect(() => {
 		setSearchQuery(searchParams.get("q") || "");
@@ -66,7 +79,7 @@ export function Header() {
 					<DesktopNav
 						favCount={favCount}
 						cartCount={cartCount}
-						isLoggedIn={isLoggedIn}
+						isLoggedIn={Boolean(user?.id)}
 					/>
 
 					<div className="md:hidden relative">
@@ -79,7 +92,7 @@ export function Header() {
 						<MobileNav
 							favCount={favCount}
 							cartCount={cartCount}
-							isLoggedIn={isLoggedIn}
+							isLoggedIn={Boolean(user?.id)}
 							showMobileNav={showMobileNav}
 							setShowMobileNav={setShowMobileNav}
 						/>

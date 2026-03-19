@@ -1,28 +1,64 @@
 "use client";
 
+import { useAddToCart } from "@/hooks/useCart";
+import {
+	useAddFavoriteDish,
+	useGetFavoriteDishes,
+	useRemoveFavoriteDish,
+} from "@/hooks/useFavorits";
+import { useCurrentUser } from "@/hooks/useUser";
+import { Heart, ShoppingBag } from "lucide-react";
 import Link from "next/link";
-import { Plus, Heart, ShoppingBag } from "lucide-react";
-import { useCart } from "@/contexts/CartContext";
-import { useFavorites } from "@/contexts/FavoritesContext";
 import { toast } from "sonner";
 
 export function MenuItemCard({ item, imageUrl }) {
-	const { addToCart } = useCart();
-	const { toggleFavoriteDish, isDishFavorite } = useFavorites();
-	const isFav = isDishFavorite(item.id, item.restaurantId);
+	const { mutateAsync: addToCartAsync, isPending: isAddingToCart } =
+		useAddToCart();
 
-	const handleAddToCart = () => {
-		addToCart({ ...item, imageUrl });
-		toast.success(`${item.name} added to cart!`);
+	const { data: user } = useCurrentUser();
+
+	const { data: dishes, isLoading: isLoadingDishes } = useGetFavoriteDishes(
+		user?.id,
+	);
+
+	const { mutateAsync: addFavoriteDish, isPending: isAddingDish } =
+		useAddFavoriteDish();
+
+	const { mutateAsync: removeFavoriteDish, isPending: isRemovingDish } =
+		useRemoveFavoriteDish();
+
+	const isFavorite = dishes?.some((d) => d.menu_item_id === item.id);
+
+	// Toggle favorite status of the dish
+	const handleToggleFavorite = async (e) => {
+		e.preventDefault();
+		e.stopPropagation();
+		if (!user) {
+			toast.error("You must be logged in to manage favorites");
+			return;
+		}
+		try {
+			if (!isFavorite)
+				await addFavoriteDish({ userId: user.id, menuId: item.id });
+			else await removeFavoriteDish({ userId: user.id, menuId: item.id });
+		} catch (error) {
+			console.error("Error toggling favorite:", error);
+		}
 	};
 
-	const handleFavorite = () => {
-		toggleFavoriteDish(item, imageUrl);
-		toast.success(
-			isFav
-				? `${item.name} removed from favorites`
-				: `${item.name} added to favorites`,
-		);
+	const handleAddToCart = async () => {
+		if (!user) {
+			toast.error("You must be logged in to add to cart");
+			return;
+		}
+		try {
+			await addToCartAsync({
+				userId: user.id,
+				item,
+			});
+		} catch (error) {
+			console.error("Error adding to cart:", error);
+		}
 	};
 
 	return (
@@ -39,12 +75,14 @@ export function MenuItemCard({ item, imageUrl }) {
 				/>
 				<div className="absolute inset-0 bg-linear-to-r from-black/10 to-transparent" />
 				<button
-					onClick={handleFavorite}
+					onClick={handleToggleFavorite}
+					disabled={isAddingDish || isRemovingDish}
+					type="button"
 					className="absolute top-3 left-3 p-2 rounded-full bg-white/90 dark:bg-gray-900/90 backdrop-blur-md hover:bg-white dark:hover:bg-gray-900 transition-all shadow-md hover:scale-110"
-					aria-label={isFav ? "Remove from favorites" : "Add to favorites"}
+					aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
 				>
 					<Heart
-						className={`w-4 h-4 transition-colors ${isFav ? "fill-red-500 text-red-500" : "text-gray-500 dark:text-gray-400"}`}
+						className={`w-4 h-4 transition-colors ${isFavorite ? "fill-red-500 text-red-500" : "text-gray-500 dark:text-gray-400"}`}
 					/>
 				</button>
 

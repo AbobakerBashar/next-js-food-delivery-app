@@ -1,6 +1,13 @@
 "use client";
 
 import {
+	useAddresses,
+	useCurrentUser,
+	useGetSessionUser,
+	usePaymentMethods,
+	useProfile,
+} from "@/hooks/useUser";
+import {
 	getAddresses,
 	getCurrentUser,
 	getPaymentMethods,
@@ -29,84 +36,122 @@ import {
 const UserContext = createContext(null);
 
 export function UserProvider({ children }) {
+	const { session, isLoading: isLoadingSession } = useGetSessionUser();
 	const [user, setUser] = useState(null);
 	const [isLoggedIn, setIsLoggedIn] = useState(false);
 	const [loading, setLoading] = useState(true);
 
-	const loadUserData = useCallback(async (userId) => {
-		try {
-			const [profile, currentUser, addresses, paymentMethods] =
-				await Promise.all([
-					getProfile(userId),
-					getCurrentUser(),
-					getAddresses(userId),
-					getPaymentMethods(userId),
-				]);
-			setUser({
-				...profile,
-				id: userId,
-				...currentUser?.user_metadata,
-				addresses,
-				paymentMethods,
-			});
-			setIsLoggedIn(true);
-		} catch (error) {
-			if (error instanceof Error) {
-				console.error("Error loading user data:", error.message, error.stack);
-			} else if (typeof error === "object" && error !== null) {
-				console.error("Error loading user data:", JSON.stringify(error));
-			} else {
-				console.error("Error loading user data:", error);
-			}
-			setUser(null);
-			setIsLoggedIn(false);
-		}
-	}, []);
+	const userId = session?.user?.id;
+
+	const profileQuery = useProfile(userId);
+	const currentUserQuery = useCurrentUser();
+	const addressesQuery = useAddresses(userId);
+	const paymentMethodsQuery = usePaymentMethods(userId);
+
+	const isLoading =
+		profileQuery.isLoading ||
+		currentUserQuery.isLoading ||
+		addressesQuery.isLoading ||
+		paymentMethodsQuery.isLoading ||
+		isLoadingSession;
+
+	const isError =
+		profileQuery.isError ||
+		currentUserQuery.isError ||
+		addressesQuery.isError ||
+		paymentMethodsQuery.isError;
 
 	useEffect(() => {
-		supabase.auth.getSession().then(({ data: { session } }) => {
-			if (session?.user) {
-				loadUserData(session.user.id).then(() => setLoading(false));
-			} else {
-				setLoading(false);
-			}
-		});
+		setIsLoggedIn(!!session?.user);
+		setLoading(isLoading);
 
-		const {
-			data: { subscription },
-		} = supabase.auth.onAuthStateChange(async (_event, session) => {
-			if (session?.user) {
-				await loadUserData(session.user.id);
-			} else {
-				setUser(null);
-				setIsLoggedIn(false);
-			}
-			setLoading(false);
-		});
+		if (!session?.user || isLoading) return;
 
-		return () => subscription.unsubscribe();
-	}, [loadUserData]);
-
-	const login = async (email, password) => {
-		try {
-			await supabaseSignIn(email, password);
-			return { success: true };
-		} catch (error) {
-			return { success: false, error: error.message };
+		if (isError) {
+			console.error("Error loading user data");
+			return;
 		}
-	};
-	const goWithGoogle = async () => {
-		try {
-			const { data, error } = await supabase.auth.signInWithOAuth({
-				provider: "google",
-				options: {
-					redirectTo: `${window.location.origin}/callback`,
-				},
-			});
-		} catch (error) {
-			return { success: false, error: error.message };
-		}
-	};
+
+		const profile = profileQuery.data;
+		const currentUser = currentUserQuery.data;
+		const addresses = addressesQuery.data;
+		const paymentMethods = paymentMethodsQuery.data;
+
+		const userData = {
+			...profile,
+			id: session.user.id,
+			...currentUser?.user_metadata,
+			addresses,
+			paymentMethods,
+			isAdmin: profile?.role === "admin",
+		};
+
+		setUser(userData);
+	}, [
+		session,
+		isLoading,
+		isError,
+		profileQuery.data,
+		currentUserQuery.data,
+		addressesQuery.data,
+		paymentMethodsQuery.data,
+	]);
+
+	// const loadUserData = useCallback(async (userId) => {
+	// 	try {
+	// 		const [profile, currentUser, addresses, paymentMethods] =
+	// 			await Promise.all([
+	// 				getProfile(userId),
+	// 				getCurrentUser(),
+	// 				getAddresses(userId),
+	// 				getPaymentMethods(userId),
+	// 			]);
+	// 		setUser({
+	// 			...profile,
+	// 			id: userId,
+	// 			...currentUser?.user_metadata,
+	// 			addresses,
+	// 			paymentMethods,
+	// 			isAdmin: profile?.role === "admin",
+	// 		});
+	// 		setIsLoggedIn(true);
+	// 	} catch (error) {
+	// 		if (error instanceof Error) {
+	// 			console.error("Error loading user data:", error.message, error.stack);
+	// 		} else if (typeof error === "object" && error !== null) {
+	// 			console.error("Error loading user data:", JSON.stringify(error));
+	// 		} else {
+	// 			console.error("Error loading user data:", error);
+	// 		}
+	// 		setUser(null);
+	// 		setIsLoggedIn(false);
+	// 	}
+	// }, []);
+
+	// useEffect(() => {
+	// 	supabase.auth.getSession().then(({ data: { session } }) => {
+	// 		if (session?.user) {
+	// 			loadUserData(session.user.id).then(() => setLoading(false));
+	// 		} else {
+	// 			setLoading(false);
+	// 		}
+	// 	});
+
+	// 	const {
+	// 		data: { subscription },
+	// 	} = supabase.auth.onAuthStateChange(async (_event, session) => {
+	// 		if (session?.user) {
+	// 			await loadUserData(session.user.id);
+	// 		} else {
+	// 			setUser(null);
+	// 			setIsLoggedIn(false);
+	// 		}
+	// 		setLoading(false);
+	// 	});
+
+	// 	return () => subscription.unsubscribe();
+	// }, [loadUserData]);
+
 	const signup = async (name, email, password) => {
 		try {
 			await supabaseSignUp(name, email, password);
@@ -260,7 +305,6 @@ export function UserProvider({ children }) {
 				user,
 				isLoggedIn,
 				loading,
-				login,
 				signup,
 				updateProfile,
 				addAddress,
@@ -270,8 +314,6 @@ export function UserProvider({ children }) {
 				addPaymentMethod,
 				removePaymentMethod,
 				setDefaultPayment,
-				signInWithGoogle: goWithGoogle,
-				signUpWithGoogle: goWithGoogle,
 				logout,
 			}}
 		>

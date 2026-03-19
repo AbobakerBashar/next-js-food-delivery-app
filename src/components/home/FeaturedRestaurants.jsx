@@ -1,16 +1,9 @@
-"use client";
-
+import { getFeaturedRestaurants } from "@/lib/restaurants-queries";
+import { Clock, Star } from "lucide-react";
 import Link from "next/link";
-import { useState, useEffect } from "react";
-import { Star, Clock } from "lucide-react";
 
-export function FeaturedRestaurants({ restaurants }) {
-	const [loading, setLoading] = useState();
-	useEffect(() => {
-		if (restaurants.length) setLoading(false);
-		else setLoading(true);
-	}, [restaurants]);
-	if (!restaurants.length && !loading) return null;
+export async function FeaturedRestaurants({}) {
+	const restaurants = await getFeaturedRestaurants();
 
 	return (
 		<section className="mb-14">
@@ -21,7 +14,7 @@ export function FeaturedRestaurants({ restaurants }) {
 				</div>
 			</div>
 			<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-				{restaurants.map((restaurant) => (
+				{restaurants?.map((restaurant) => (
 					<Link
 						key={restaurant.id}
 						href={`/restaurant/${restaurant.id}`}

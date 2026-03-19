@@ -1,19 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
-
 import { Flame } from "lucide-react";
 import { useRef } from "react";
 
-import DishesList from "./DishesList";
+import { useGetPopularDishes } from "@/hooks/useMenuItems";
+import { LoadingSpinner } from "../ui/Loading";
+import DishesList from "./DishCard";
 import ScrollArrows from "./ScrollArrows";
 
-export function PopularDishes({ dishes }) {
-	const [loading, setLoading] = useState();
-	useEffect(() => {
-		if (dishes.length) setLoading(false);
-		else setLoading(true);
-	}, [dishes]);
+export function PopularDishes() {
+	const { isLoading, dishes } = useGetPopularDishes(8);
 	const scrollRef = useRef(null);
 
 	const scroll = (direction) => {
@@ -26,7 +22,8 @@ export function PopularDishes({ dishes }) {
 		}
 	};
 
-	if (!dishes.length && !loading) return null;
+	if (isLoading) return <LoadingSpinner message="Loading Popular Dishes..." />;
+	if (dishes?.length === 0) return null;
 
 	return (
 		<section className="mb-14">
@@ -45,7 +42,9 @@ export function PopularDishes({ dishes }) {
 					scrollbarColor: "#fdba74 transparent",
 				}}
 			>
-				<DishesList dishes={dishes} />
+				{dishes?.map((dish) => (
+					<DishesList key={dish.id} dish={dish} />
+				))}
 			</div>
 		</section>
 	);

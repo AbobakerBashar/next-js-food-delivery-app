@@ -1,23 +1,62 @@
 "use client";
 
+import {
+	useAddFavoriteRestaurant,
+	useGetFavoriteRestaurants,
+	useRemoveFavoriteRestaurant,
+} from "@/hooks/useFavorits";
+import { useCurrentUser } from "@/hooks/useUser";
+
+import { Clock, DollarSign, Heart, Star } from "lucide-react";
 import Link from "next/link";
-import { Star, Clock, DollarSign, Heart } from "lucide-react";
-import { useFavorites } from "@/contexts/FavoritesContext";
-import { toast } from "sonner";
+import { toast } from "react-toastify";
 
 export function RestaurantCard({ restaurant, imageUrl }) {
-	const { toggleFavoriteRestaurant, isRestaurantFavorite } = useFavorites();
-	const isFav = isRestaurantFavorite(restaurant.id);
+	const { data: user } = useCurrentUser();
 
-	const handleFavorite = (e) => {
+	const {
+		mutateAsync: addFavoriteRestaurant,
+		isPending: addFavoriteRestaurantPending,
+	} = useAddFavoriteRestaurant();
+
+	const {
+		mutateAsync: removeFavoriteRestaurant,
+		isPending: removeFavoriteRestaurantPending,
+	} = useRemoveFavoriteRestaurant();
+
+	const { data: restaurants, isLoading: restaurantsLoading } =
+		useGetFavoriteRestaurants(user?.id);
+
+	const isExistent = restaurants?.some(
+		(fav) => fav.restaurant_id === restaurant.id,
+	);
+
+	// Handle Favorite Toggle
+	const handleToggleFavorite = async (e) => {
 		e.preventDefault();
 		e.stopPropagation();
-		toggleFavoriteRestaurant(restaurant, imageUrl);
-		toast.success(
-			isFav
-				? `${restaurant.name} removed from favorites`
-				: `${restaurant.name} added to favorites`,
-		);
+
+		if (!user) {
+			toast.error("You must be logged in to manage favorites.");
+			return;
+		}
+
+		try {
+			if (isExistent) {
+				await removeFavoriteRestaurant({
+					userId: user?.id,
+					restaurantId: restaurant.id,
+				});
+			} else {
+				await addFavoriteRestaurant({
+					userId: user?.id,
+					restaurantId: restaurant.id,
+				});
+			}
+		} catch (error) {
+			console.log("Error toggling favorite restaurant:", error);
+			toast.error("Failed to update favorite restaurant. Please try again.");
+		}
 	};
 
 	return (
@@ -32,12 +71,15 @@ export function RestaurantCard({ restaurant, imageUrl }) {
 					className="w-full h-full object-cover"
 				/>
 				<button
-					onClick={handleFavorite}
-					className="absolute top-3 right-3 p-2 rounded-full bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm hover:bg-white dark:hover:bg-gray-900 transition-colors shadow-md"
-					aria-label={isFav ? "Remove from favorites" : "Add to favorites"}
+					onClick={handleToggleFavorite}
+					disabled={
+						addFavoriteRestaurantPending || removeFavoriteRestaurantPending
+					}
+					aria-label={isExistent ? "Remove from favorites" : "Add to favorites"}
+					className={`absolute top-3 right-3 p-2 rounded-full bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm hover:bg-white dark:hover:bg-gray-900 transition-colors shadow-md ${removeFavoriteRestaurantPending || addFavoriteRestaurantPending ? "cursor-not-allowed opacity-50" : ""}`}
 				>
 					<Heart
-						className={`w-5 h-5 transition-colors ${isFav ? "fill-red-500 text-red-500" : "text-gray-500 dark:text-gray-400"}`}
+						className={`w-5 h-5 transition-colors ${isExistent ? "fill-red-500 text-red-500" : "text-gray-500 dark:text-gray-400"}`}
 					/>
 				</button>
 			</div>

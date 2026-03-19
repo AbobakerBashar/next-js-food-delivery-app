@@ -90,36 +90,6 @@ export default function CheckoutForm({
 					deliveryZipCode: address.zipCode,
 				});
 
-				/*
-					Create Delivery
-				*/
-				// Get an available driver
-				const drivers = await getAvailableDrivers();
-				const driver = drivers.length > 0 ? drivers[0] : null;
-
-				const deliveryData = driver
-					? {
-							order_id: order.id,
-							driver_id: driver.id,
-							assigned_at: new Date().toISOString(),
-							status: "assigned",
-							picked_up_at: null,
-							delivered_at: null,
-						}
-					: {
-							order_id: order.id,
-							driver_id: null,
-							assigned_at: null,
-							status: "pending",
-							picked_up_at: null,
-							delivered_at: null,
-						};
-
-				// Update Driver Status if Has been Assigned
-				if (driver) await updateDriver(driver.id, { status: "busy" });
-
-				const delivery = await createDelivery(deliveryData);
-
 				await clearCart();
 				toast.success("Payment successful!");
 				router.push(`/order-confirmation/${order.id}`);

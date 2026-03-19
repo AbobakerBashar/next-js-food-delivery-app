@@ -24,11 +24,11 @@ const OrderSummary = ({ orderDetails }) => {
 			<div className="border-t dark:border-gray-700 pt-3 space-y-2">
 				<div className="flex justify-between text-sm text-gray-500 dark:text-gray-400">
 					<span>Subtotal</span>
-					<span>${orderDetails?.subtotal.toFixed(2)}</span>
+					<span>${orderDetails?.subtotal?.toFixed(2)}</span>
 				</div>
 				<div className="flex justify-between text-sm text-gray-500 dark:text-gray-400">
 					<span>Delivery Fee</span>
-					<span>${orderDetails?.delivery_fee.toFixed(2)}</span>
+					<span>${orderDetails?.deliveryFee?.toFixed(2)}</span>
 				</div>
 				<div className="flex justify-between font-semibold pt-2 border-t dark:border-gray-700">
 					<span>Total</span>

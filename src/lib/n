@@ -1,0 +1,30 @@
+I have a Next.js project where many functions were previously imported from a single file: "src/lib/queries.js".
+I have now moved these functions into specialized files:
+
+- Cart functions → src/lib/cart-queries.js
+- Auth/Profile functions → src/lib/auth-queries.js
+- Address functions → src/lib/address-queries.js
+- Payment methods functions → src/lib/payment-methods-queries.js
+
+I want to update all files in my project so that:
+
+1. Any function previously imported from "queries.js" is replaced by import from the correct specialized file.
+2. Only the functions needed in a file are imported.
+3. The import path should be relative and correct (e.g., './lib/cart-queries').
+4. Remove the old import from "queries.js" once replaced.
+
+Example:
+
+Old import:
+import { getCart, addToCart } from '@/lib/queries';
+
+New import:
+import { useGetCart, useAddToCart } from '@/lib/cart-queries';
+
+Please generate a refactoring code transformation instructions that:
+
+- Finds all imports from "queries.js"
+- Maps each function to its new file
+- Rewrites the import statements accordingly
+
+DO ONLY FOR HOME PAGE
